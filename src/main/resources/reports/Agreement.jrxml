@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Agreement" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d384e0bc-99fe-4a09-af83-3eff140e70af">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="1173"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="LocalPostgres"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="270"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="719"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="476"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="510"/>
+	<parameter name="contractStateId" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[2L]]></defaultValueExpression>
+	</parameter>
+	<parameter name="resourceDir" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/sirius/siriuscrm/src/main/resources/reports/"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  (SELECT title from months_ukr where number = EXTRACT(MONTH FROM now()) ) AS month_word_ukr,
+  contract_number(c.id) as contract_number,
+/*
+  p.*,
+  c.*,
+*/
+  cs.refund,
+  cs.payment,
+  p.reaction_time,
+  (select name from person ps, ppk_person pp where ps.id = pp.person_id and pp.ppk_id = p.id limit 1) as person_name,
+  p.address,
+  (select number_to_string(payment::INTEGER) as string_payment),
+  (select number_to_string(cs.refund::INTEGER) as string_responsibility),
+  (select title from dictionaries where id = p.object_type_id) as object,
+  (select scheme from ppk_files where ppk_id = p.id) as scheme,
+  (select map from ppk_files where ppk_id = p.id) as map_,
+  (select map_details from ppk_files where ppk_id = p.id) as map_details
+FROM
+  ppk p, contract c, contract_state cs
+WHERE
+  p.id = c.ppk_id and c.id = cs.contract_id
+AND
+  cs.id = $P{contractStateId}]]>
+	</queryString>
+	<field name="month_word_ukr" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="month_word_ukr"/>
+	</field>
+	<field name="contract_number" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="contract_number"/>
+	</field>
+	<field name="refund" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="refund"/>
+	</field>
+	<field name="payment" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="payment"/>
+	</field>
+	<field name="reaction_time" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.label" value="reaction_time"/>
+	</field>
+	<field name="person_name" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="person_name"/>
+	</field>
+	<field name="address" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="address"/>
+	</field>
+	<field name="string_payment" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="string_payment"/>
+	</field>
+	<field name="string_responsibility" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="string_responsibility"/>
+	</field>
+	<field name="object" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.label" value="object"/>
+	</field>
+	<field name="scheme" class="java.io.InputStream">
+		<property name="com.jaspersoft.studio.field.label" value="scheme"/>
+	</field>
+	<field name="map_" class="java.io.InputStream">
+		<property name="com.jaspersoft.studio.field.label" value="map_"/>
+	</field>
+	<field name="map_details" class="java.io.InputStream">
+		<property name="com.jaspersoft.studio.field.label" value="map_details"/>
+	</field>
+	<title>
+		<band height="60">
+			<staticText>
+				<reportElement x="51" y="18" width="452" height="20" uuid="452d7a8f-c97d-45ca-b2f1-5f5d51e02f60"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[охорони майна сигналізацією]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="51" y="0" width="452" height="18" uuid="7190006f-fac5-43f3-b369-96847df1cc88"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ДОГОВІР  № "+$F{contract_number}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="503" y="0" width="52" height="50" uuid="e9aa1a0b-356c-40eb-ac93-2ecc19d4257b"/>
+				<imageExpression><![CDATA[$P{resourceDir}+"sirius_tiger.jpg"]]></imageExpression>
+			</image>
+			<elementGroup>
+				<staticText>
+					<reportElement x="0" y="50" width="51" height="10" uuid="f729de20-a7a1-4615-8a96-7a94c9f56c59"/>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[м. Київ	]]></text>
+				</staticText>
+				<image>
+					<reportElement x="0" y="0" width="51" height="50" uuid="e1fa1546-adcb-4728-88ed-373ad6a010ec"/>
+					<imageExpression><![CDATA[$P{resourceDir}+"tiger-star.jpg"]]></imageExpression>
+				</image>
+			</elementGroup>
+			<textField>
+				<reportElement x="445" y="48" width="110" height="12" uuid="6fee3862-ec6f-4938-bc7e-d7df0670e9c1"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["від «"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"» "+$F{month_word_ukr}+ " " +Calendar.getInstance().get(Calendar.YEAR)+" р."]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<detail>
+		<band height="688" splitType="Stretch">
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+			<textField>
+				<reportElement x="0" y="0" width="555" height="52" uuid="bbe3bc7d-dbb3-4752-9b7c-82deb29d8e7c"/>
+				<textElement textAlignment="Justified" markup="none">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["	Виконавець: Товариство з обмеженою відповідальністю «СІРІУС-ПУЛЬТ», в особі директора Сарнавської Віти Володимирівни, який діє на підставі Статуту та Ліцензії про охоронну діяльність: серія АЕ № 262903,виданої МВС України 14 серпня 2013 року, з однієї сторони, і"+
+"Замовник: "+$F{person_name} + " з іншої сторони, разом надалі – Сторони, уклали цей Договір про наступне:"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="555" height="14" uuid="37087193-9dae-43ef-a7e0-ba569aab51e1"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[1. Предмет Договору]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="171" width="555" height="13" uuid="04dd6894-2d63-439d-af9d-9fb8418f0da3"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[3. Вартість послуг ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="143" width="555" height="14" uuid="0feb1414-3e3c-4a10-a5f0-b8281e79d0a0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[2. Назва та адреса об’єкту охорони]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="324" width="555" height="14" uuid="9010068b-11eb-48b4-96ce-363393c6edef"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[4. Порядок розрахунків]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="566" width="555" height="14" uuid="f4da4682-5358-42c2-90ea-c806397c1d80"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[5. Вимоги до стану технічної укріпленості об’єкта та правила майнової безпеки]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="580" width="555" height="108" uuid="04c092bd-2171-426c-b45c-288f9f33efef"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	5.1. Підлога, стіни, покрівля, стеля, вікна, люки i двері об’єкта повинні бути належним чином укріплені та знаходитись в такому стані, що не дає можливості проникнення на об’єкт шляхом вільного доступу.
+	5.2. Виконавець спільно із Замовником не рідше 1 разу на рік проводить обстеження об’єкта та здійснює перевірку працездатності сигналізації, її відповідності схемі блокування об’єкта.
+	При виявленні недоліків виконується їх усунення в гарантійний термін безкоштовно, в подальшому за рахунок Замовника.
+	В разі незгоди Замовника на усунення недоліків Виконавець має право припинити надання послуг в односторонньому порядку, письмово попередивши про це Замовника не менше ніж за 10 (десять) днів.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="66" width="555" height="77" uuid="502cbb8f-fb5a-4161-8ab0-c2dff1a4bfad"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	1.1. За цим Договором Замовник доручає, а Виконавець зобов’язується, на підставі наявності потрібних документів, здійснювати охорону майна Замовника на об’єкті та обслуговування сигналізації на цьому об’єкті.
+За цим Договором Виконавець не приймає майно Замовника на зберігання і не вступає у володіння ним.
+	1.2. Періодом охорони майна на об’єкті вважається час з моменту прийняття Виконавцем сигналізації, якою обладнаний об’єкт, під спостереження до зняття її з-під спостереження Замовником у відповідності до Інструкції з користування сигналізацією.
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="157" width="555" height="14" uuid="1baff02a-2e31-4ba8-be9d-e52f34cc3d28"/>
+				<textElement markup="none"/>
+				<textFieldExpression><![CDATA["	2.1. " +$F{object} + " за адресою " +$F{address}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="184" width="555" height="39" uuid="53d96285-6b41-47ac-bcaf-35137d455357"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none"/>
+				<textFieldExpression><![CDATA["	3.1. Вартість охорони майна Замовника на об’єкті шляхом спостереження за засобами сигналізації та її обслуговування становить ________ грн., ПДВ _______ грн., всього "+ $F{payment} +" грн. з ПДВ на місяць."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="223" width="555" height="101" uuid="5cf4ddd1-f233-46e7-ab9b-95d2102a7217"/>
+				<textElement textAlignment="Justified" markup="none"/>
+				<text><![CDATA[	3.2. При необхідності фізичного спостереження за об’єктом  (більше однієї години) Замовник сплачує Виконавцю: 100,00 грн., ПДВ 20,00 грн., всього 120,00 грн. з ПДВ за кожну годину охорони.
+	3.3. За кожний хибний виїзд наряду охорони на об’єкт, що стався в результаті неправильного або необережного користування сигналізацією Замовником з порушенням вимог, встановлених даним Договором, останній сплачує Виконавцю штраф у розмірі 50,00 грн., ПДВ 10,00 грн., всього 60,00 грн. з ПДВ.
+	3.4. В разі відключення сигналізації за несплату абонентської плати вартість повторного підключення складає 100,00 грн., ПДВ 20,00 грн., всього 120,00 грн. з ПДВ.
+	3.5. У випадку одночасного авансового платежу за 6 місяців Замовник отримує знижку у розмірі 5%.
+	3.6. У випадку одночасного авансового платежу за 12 місяців Замовник отримує знижку у розмірі 10%.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="338" width="555" height="228" uuid="6587845b-f43b-4ffd-b77d-614e6a7ce9be"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	4.1. Оплата за цим Договором здійснюється Замовником щомісячно авансовим платежем до 5-ого числа місяця, в якому надаються послуги, шляхом перерахування Замовником грошових коштів у сумі місячної вартості послуг на рахунок Виконавця.
+	4.2. Оплата додаткових послуг та штрафів, пов’язаних з виконанням умов цього Договору здійснюється протягом 3-х банківських днів з моменту отримання Замовником відповідного рахунку.
+	4.3. Акти виконаних робіт, податкові накладні або інші документи, передбачені діючим Законодавством пересилаються Виконавцем Замовнику поштою або отримуються Замовником у Виконавця самостійно.
+	4.4. Замовник з першою сплатою по цьому Договору вносить авансовий внесок розміром місячного нарахування за послуги спостереження за сигналізацією на об’єкті. Цей авансовий внесок є гарантією погашення заборгованості в разі її виникнення.
+	4.5. У випадку ненадходження оплати до кінця поточного місяця та  ненадання  гарантійного листа від Замовника Виконавцю на погашення заборгованості 01-ого числа наступного місяця в 00.00 охоронна сигналізація буде автоматично відключена від  пульту централізованої охорони.
+	4.6. У випадку інфляції, зміни норм законодавства, які безпосередньо впливають на вартість послуг, що надаються Виконавцем за цим Договором, останній має право змінити їх вартість, про що письмово повідомляє Замовника. У разі, якщо Замовник протягом 30-ти днів з дня отримання такого повідомлення не укладе із Виконавцем  Додаткової угоди про зміну вартості послуг, останній має право достроково в односторонньому порядку розірвати даний Договір.
+]]></text>
+			</staticText>
+		</band>
+		<band height="748">
+			<staticText>
+				<reportElement x="0" y="139" width="555" height="14" uuid="630a1c6a-1d63-4e8c-a233-2f426ff98cb9"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[6. Обов’язки Сторін]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="139" uuid="bdecf4c7-c664-473d-bb26-991fa19ef390"/>
+				<text><![CDATA[	5.3. Виконавець в порядку, визначеному п.5.2 даного Договору, додатково здійснює обстеження технічного укріплення об’єкта та перевірку працездатності сигналізації, її відповідності схемі блокування об’єкта в наступних випадках:
+	- тимчасового припинення надання послуг,
+	- переобладнання об’єкта сигналізацією,
+	- проведення Замовником на об’єкті ремонту,
+	- перепланування об’єкту.
+	5.4. Виконавець встановлює обов’язкові для Замовника наступні вимоги майнової безпеки:
+	5.4.1. Зберігати на об’єкті грошові кошти, цінні папери, дорогоцінні метали та вироби з них, дорогоцінне каміння та вироби з них, зброю, боєприпаси, наркотичні засоби, психотропні речовини, їх аналоги або прекурсори, фото та відеокамери у сейфах  або металевих шафах (ящиках).
+	5.4.2. Замовнику категорично забороняється самостійно вносити зміни у схему блокування об’єкта сигналізацією, здійснювати заміну технічних засобів сигналізації та залучати для цього третіх осіб.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="153" width="555" height="13" uuid="20feb3f0-86de-479c-931c-8eb30241c24d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[	6.1. Виконавець зобов’язаний:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="389" width="555" height="354" uuid="62425779-a1ca-407e-8646-d7dced02e09a"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	6.2.1. Виконувати визначені актом обстеження та цим Договором вимоги та правила майнової безпеки, створювати належні умови для забезпечення недоторканості майна на об’єкті, сприяти Виконавцю у виконанні ним своїх зобов’язань.
+	6.2.2. Своєчасно і в повному обсязі здійснювати оплату за цим Договором.
+	6.2.3. Визначити осіб, уповноважених за здавання сигналізації під спостереження та її зняття з-під спостереження, та письмово повідомити Виконавця про персональний склад цих осіб. У випадку змін у складі уповноважених осіб негайно письмово повідомляти про це Виконавця.
+	6.2.4. Гарантувати безперебійну працездатність і вживати невідкладних заходів до своєчасного ремонту ліній зв’язку та мережі електроживлення, до яких підключена сигналізація.
+	6.2.5. У випадку проведення на об’єкті перепланування (а саме: встановлення або переміщення перегородок, високих шаф, стелажів, заміни або появи нових місць зберігання цінностей і т.п.), внаслідок якого може виникнути необхідність внесення змін у схему блокування об’єкта сигналізацією, повідомити про це Виконавця не пізніше ніж за 5 днів до початку проведення таких робіт або до настання таких змін.
+	6.2.6. Не здійснювати самостійно обслуговування, ремонт сигналізації на об’єкті та не залучати для цього третіх осіб.
+	6.2.7. У випадку виявлення слідів проникнення на об’єкт негайно сповістити про це Виконавця.
+	6.2.8. Своєчасно, але не менше, ніж за три години до початку, письмово повідомляти Виконавця про дату та час проведення інвентаризації майна на об’єкті та визначення розміру збитків. Інвентаризація майна на об’єкті та визначення розміру збитків здійснюються за участю уповноважених представників Виконавця у відповідності до вимог чинного законодавства України.
+	6.2.9. Не розголошувати стороннім особам конфіденційну інформацію, до якої відноситься інформація про: пультові коди, системи сигналізації, систему зв’язку i контролю за здійсненням охорони.
+	6.2.10. У випадку зміни на об’єкті режиму охорони майна, профілю діяльності, а також проведення інших заходів повідомити про це Виконавця не пізніше, ніж за 5 (п’ять) днів до початку проведення таких робіт або до настання таких змін.
+	6.2.11. У випадку відсутності напруги на об’єкті з будь-яких причин (організаційно-правових чи технічних) Замовник бере на себе зобов’язання забезпечити охоронну систему живленням від автомобільних акумуляторів довгострокової дії і їх регулярну підзарядку.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="375" width="245" height="14" uuid="78d43498-c673-4a99-89cc-0bbd3ea81817"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[	6.2. Замовник зобов’язаний:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="166" width="555" height="31" uuid="eac68b2c-ac72-4c2a-a55e-38d5be3fbbd7"/>
+				<text><![CDATA[	6.1.1. Здійснювати охорону майна Замовника, що знаходиться на об’єкті, у відповідності до умов цього Договору.
+	]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="197" width="555" height="51" uuid="f4041bf6-58ee-4f69-8697-dd4b83698b10"/>
+				<textFieldExpression><![CDATA["	6.1.2. У разі надходження на ПЦО сигналу про спрацювання сигналізації на об’єкті в період охорони негайно направити та забезпечити прибуття наряду охорони в період до " + $F{reaction_time} + " хвилин на об’єкт для встановлення причин спрацювання сигналізації, вжити заходи щодо затримання та передачі осіб, які порушили встановлений режим спостереження на об’єкті правоохоронним органам."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="248" width="555" height="127" uuid="c1b2decc-f3e3-4321-9ae1-aab69291ddc6"/>
+				<text><![CDATA[	6.1.3. Забезпечити охорону майна на об’єкті після спрацювання сигналізації до прибуття на об’єкт Замовника.
+	6.1.4. В разі проникнення на об’єкт або пошкодження периметру охорони здійснювати безкоштовний фізичний нагляд за об’єктом протягом однієї години з моменту прибуття наряду охорони. У випадку збільшення терміну фізичного нагляду охорона об’єкту здійснюється за окрему плату (згідно пункту 3).
+	6.1.5. Якісно та своєчасно, в технічно можливий строк ліквідовувати несправності, які можуть бути усунуті безпосередньо за місцем знаходження сигналізації за заявкою Замовника.
+	6.1.6. Не розголошувати стороннім особам конфіденційну інформацію про об’єкт охорони та Замовника.
+	6.1.7. У випадку проникнення на об'єкт сторонніх осіб брати участь у роботі інвентаризаційної комісії, створеною Замовником для зняття залишків майна на об’єкті та визначення розміру збитків, завданих Замовнику.
+	6.1.8. Надавати за рахунок Замовника за діючими розцінками Виконавця додаткові послуги.]]></text>
+			</staticText>
+		</band>
+		<band height="748">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="14" uuid="bb787659-1de0-4987-8378-1cf291a3f572"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[7. Відповідальність Сторін]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="14" width="245" height="14" uuid="111cb151-e273-4d2a-b65b-8ad3387eab1d"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[	7.1. Відповідальність Виконавця:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="334" width="553" height="14" uuid="e46588f0-6b39-4d84-aef6-b2cc0191d8e3"/>
+				<textElement textAlignment="Left">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[	7.2. Відповідальність Замовника:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="348" width="555" height="26" uuid="fb41e38f-722b-4cb9-aada-c4ddc5c7a166"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	7.2.1. За кожний хибний виїзд наряду охорони на об’єкт, що стався в результаті неправильного або необережного користування сигналізацією Замовником, останній сплачує Виконавцю штраф (згідно пункту 3).]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="374" width="555" height="14" uuid="c471d7cc-0095-42d0-8635-c7210202e5c0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[8. Обставини, за яких Виконавець звільняється від відповідальності]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="388" width="555" height="240" uuid="42ab0f58-18c1-4fc8-ad7b-6a693a50c1f6"/>
+				<text><![CDATA[	8.1. У випадку заборгованості Замовником за послуги пультової охорони.
+	8.2. Виконавець звільняється від відповідальності за невиконання або неналежне виконані своїх зобов’язань за Договором за умови відсутності його вини, у випадку фізичної неможливості попередження збитків, а також, коли це невиконання сталося внаслідок непереборної сили.
+	8.3. Матеріальна відповідальність не розповсюджується на приміщення та зони, котрі не захищені датчиками.
+	8.4. Виконавець звільняється від відповідальності, якщо збитки Замовнику завдані внаслідок:
+	а) недотримання Замовником правил протипожежної безпеки;
+	б) аварій побутових комунікацій на об’єкті;
+	в) масових порушень громадського порядку або військових конфліктів;
+	г) застосування органами державної влади щодо майна Замовника заходів примусу (накладення арешту, вилучення, конфіскація тощо);
+	д) розголошення Замовником стороннім особам конфіденційної інформації;
+	е) невиконання Замовником вимог щодо стану технічної укріпленності об’єкту та правил майнової безпеки, визначених даним Договором;
+	є) не повідомлення Виконавця про порушення цілісності архітектурно-будівельних конструкцій об’єкта;
+	ж) порушення Замовником вимог Інструкції з користування сигналізацією;
+	з) проникнення на об’єкт сторонніх осіб через місця, від обладнання сигналізацією яких Замовник відмовився;
+	і) Замовник не поставив об’єкт під охорону;
+	8.5. Виконавець звільняється від обов’язку відшкодувати збитки Замовнику:
+	а) розмір яких визначено Замовником самостійно без уповноважених представників Виконавця, окрім випадків, коли Виконавець своєчасно був повідомлений про дату і час проведення інвентаризації майна на об’єкті та визначення розміру збитків;
+	б) якщо особа, яка проникла на об’єкт і нанесла майнову шкоду Замовнику, затримана безпосередньо на об’єкті або під час переслідування при втечі з об’єкта;
+	в) якщо збитки Замовнику завдані без проникнення на об’єкт;
+	г) якщо об’єкт залишається без охорони по причині довгострокової відсутності напруги;
+	д) за пошкодження периметру;
+	е) за невиконання п. 6.2.5.
+	8.6. Виконавець не несе матеріальної відповідальності, якщо не буде доведено факт викрадення майна та його приналежності Замовнику, а також оцінена його вартість.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="628" width="555" height="14" uuid="9a914dc5-56e7-46ef-818e-6138578ad2b4"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[9. Особливі умови Договору]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="642" width="555" height="30" uuid="f0d49624-fc78-4390-ace6-7778a45edc99"/>
+				<text><![CDATA[	9.1. Для виконання своїх зобов’язань за цим Договором Виконавець має право залучити третіх осіб, відповідальність за дії яких несе Виконавець.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="28" width="555" height="41" uuid="a0bc8d2a-fb35-4ca8-81ad-349e75e63d84"/>
+				<textFieldExpression><![CDATA["	7.1.1. Виконавець відшкодовує збитки, що завдані Замовнику третіми особами внаслідок невиконання або неналежного виконання Виконавцем своїх договірних зобов’язань в межах суми прямої дійсної шкоди, але не більше "+ $F{string_responsibility} + " (" + $F{refund} + ") грн"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="69" width="553" height="260" uuid="3d73f770-ffbc-426e-9fa5-099fefcc76fe"/>
+				<textElement textAlignment="Left" verticalAlignment="Top"/>
+				<text><![CDATA[            7.1.2. До збитків, що підлягають відшкодуванню, включають вартість викраденого або знищеного майна, розмір зниження у ціні пошкодженого майна, а також суми викрадених грошових коштів (для юридичних осіб - у межах розміру ліміту залишку готівки в касі, затвердженого установою банку для Замовника)."
+	7.1.3. Розмір збитку повинен бути підтверджений відповідними документами та розрахунком вартості пошкодженого майна
+	7.1.4. Відшкодування збитків Замовнику здійснюється на підставі наданих Виконавцю наступних документів:"
+		а) заява Замовника до Виконавця про відшкодування понесених збитків з зазначенням переліку викраденого майна, його вартості у національній валюті України, переліку пошкодженого майна та розміру зниження його у ціні, а також суми викрадених грошових коштів;
+		б) акт інвентаризації майна на об’єкті, проведеної за участю представників Виконавця;
+		в) звіряльна відомість, складена за результатами проведеної інвентаризації;
+		г) акт зниження у ціні пошкодженого майна, затверджений Сторонами;
+		д) довідка територіального органу внутрішніх справ про порушення кримінальної справи чи відмову в порушенні справи за фактом викрадення майна з об’єкту, знищення або пошкодження майна на об’єкті."
+	7.1.5. У випадку відсутності спору про розмір збитків їх відшкодування Замовнику здійснюється не пізніше 15-ти днів з дати отримання Виконавцем від Замовника всіх необхідних для цього документів."
+	7.1.6. У разі повернення Замовнику викраденого майна присутність представників Виконавця є обов’язковою, при цьому складається акт за підписами обох сторін, а розмір збитків зменшується на суму вартості повернутих цінностей. Раніше сплачена Замовнику сума за такі цінності підлягає поверненню Виконавцю за першою вимогою останнього."
+	7.1.7. Виконавець не несе матеріальної відповідальності за моральну та фізичну шкоду завдану Замовнику"]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="-2" y="672" width="555" height="76" uuid="a9d4f36c-ec79-47d0-818f-349cb9a4265b"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	9.2. Замовник має право здійснювати контрольну перевірку працездатності сигналізації не частіше одного разу на місяць
+	9.3. Ремонт сигналізації, тобто ліквідація несправностей, які не можуть бути усунуті безпосередньо за місцем знаходження сигналізації, здійснюється Виконавцем за окремо укладеними договорами.
+	9.4. У випадку зміни місцезнаходження, платіжних або інших реквізитів однієї із Сторін, така Сторона зобов’язана на протязі 10-ти днів з дня настання таких змін повідомити про це іншу Сторону.
+]]></text>
+			</staticText>
+		</band>
+		<band height="748">
+			<staticText>
+				<reportElement x="0" y="76" width="555" height="76" uuid="c9374cf2-a342-4222-9e26-202f5dac52b7"/>
+				<textElement textAlignment="Justified">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[	9.5. В разі несплати за охорону у встановлений цим Договором строк – до 5-ого числа поточного місяця (незалежно від оплати авансового платежу, який є гарантією погашення заборгованості в разі її виникнення) Виконавець надає послуги по охороні об’єкту без матеріальної відповідальності.
+	9.6. В разі попереднього надходження офіційного листа про розірвання Договору, авансовий платіж, який є гарантією погашення заборгованості в разі її виникнення, переноситься на поточний місяць охорони. У даному випадку об’єкт охороняється з матеріальною відповідальністю.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="152" width="555" height="13" uuid="de913deb-d685-439c-b0c6-66e479098e79"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[10. Строк дії Договору]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="165" width="555" height="51" uuid="5755a264-f81e-4c71-a204-5c784ae1982a"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	10.1. Даний Договір набирає чинності з дати підписання обома сторонами та є чинним протягом 12 місяців.
+	10.2. Договір поновлюється на строк, встановлений п.10.1 даного Договору, якщо жодна із Сторін не менше, ніж за 15 (п’ятнадцять) днів до закінчення строку чинності Договору письмово не заявить про його припинення. Кількість разів поновлення Договору не обмежується.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="216" width="555" height="13" uuid="217e5e30-848c-4698-bb28-25e13e3632be"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[11. Зміна умов і розірвання Договору]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="229" width="555" height="228" uuid="6f0775a2-3ba5-4d20-b679-d1aae801ad28"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	11.1. Сторони можуть змінити умови цього Договору або розірвати його шляхом укладення Додаткових угод.
+	11.2. Сторона, яка вважає за необхідне змінити умови Договору або розірвати його, направляє іншій Стороні відповідну пропозицію у письмовій формі. Сторона, яка отримала пропозицію про зміну умов Договору, у 10-денний строк після одержання пропозиції письмово повідомляє другу Сторону про результат її розгляду.
+	11.3. При достроковому розірванні Договору Сторона, ініціатор розірвання Договору, повинна письмово попередити про це другу Сторону у строк не менше, ніж за 25 (двадцять п’ять) днів до дати розірвання, крім випадків, прямо передбачених даним Договором
+	11.4. Виконавець має право миттєво в односторонньому порядку розірвати Договір у наступних випадках:
+	11.4.1. У випадку відсутності або припинення права Замовника на володіння та користування об’єктом;
+	11.4.2. За наявності спору між Замовником та третьою особою щодо права володіння та користування майном, що охороняється, або об’єктом;
+	11.4.3. У випадку знищення об’єкта або сигналізації навмисними або необережними діями Замовника;
+	11.4.4. В інших випадках, коли Виконавець не має юридичних основ передбачених чинним законодавством України для охорони приміщення та майна;
+	11.4.5. У випадку наявності заборгованості.
+	11.5. При відсутності заборгованості за сплату послуг перед Виконавцем авансовий платіж повертається Замовнику, якщо ініціатором дострокового припинення Договору є Виконавець. Якщо ініціатором дострокового припинення Договору є Замовник, авансовий платіж не повертається Замовнику, а відпрацьовується охороною.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="457" width="555" height="13" uuid="73082c93-e72c-4b70-ad58-1e9a8bf334c6"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[12. Заключні положення]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="470" width="555" height="145" uuid="b9b28b45-5f6e-4e88-9567-37c1d3e1eb2c"/>
+				<text><![CDATA[	12.1. У випадках, не передбачених даним Договором, Сторони керуються чинним законодавством України.
+	12.2. Після підписання даного Договору всі попередні переговори за ним, листування, попередні угоди та протоколи про наміри з питань, що так чи інакше стосуються даного Договору, втрачають юридичну силу.
+	12.3. Спори за цим Договором підлягають вирішенню у встановленому чинним законодавством України порядку.
+	12.4. Договір з додатками, які є його невід’ємною частиною, складено українською мовою у двох примірниках, які мають однакову юридичну силу, з яких один примірник знаходиться у Замовника, а другий - у Виконавця.
+	12.5. Договір має наступні додатки:
+	Додаток № 1 – План-схема об’єкта;
+	Додаток № 2 – Акт вводу в експлуатацію охоронної сигналізації та обстеження технічного стану об’єкта.
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="615" width="555" height="13" uuid="35abed24-9381-4ca8-aa38-17cbbc79b0a5"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[13. Реквізити та підписи Сторін]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="628" width="275" height="13" uuid="3c44a21a-5423-4347-870d-b7a7b6c3d0bc"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Виконавець]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="275" y="628" width="280" height="13" uuid="fe8dd2df-524a-451e-b3ac-4ea704b4471b"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Замовник]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="641" width="275" height="107" uuid="47de2c32-c2ac-434e-9937-4378b1fe8ff4"/>
+				<text><![CDATA[ТОВ «СІРІУС-ПУЛЬТ»
+Юридична та поштова адреса:
+03061, м. Київ, вул. Одеська -14
+Р. рахунок № 26000407344
+в АТ «Райффайзен Банк Аваль» м. Київ,
+МФО 380805, код ЄДРПОУ 38792572
+ІПН 387925726588
+Тел. 044-401-01-51, 044-228-88-42
+]]></text>
+			</staticText>
+		</band>
+		<band height="748">
+			<staticText>
+				<reportElement x="332" y="0" width="223" height="43" uuid="28561356-462a-4669-bbe4-21b00d849058"/>
+				<text><![CDATA[Додаток № 1
+до Договору №
+
+]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="402" y="12" width="142" height="13" uuid="dfc3ff57-bbc3-4e3f-a76f-a59bd23ae881"/>
+				<textFieldExpression><![CDATA[$F{contract_number}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="332" y="25" width="223" height="20" uuid="73c150fa-9b2d-4f16-b29e-a8e588134dc9"/>
+				<textFieldExpression><![CDATA["від «"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"» "+$F{month_word_ukr}+ " " +Calendar.getInstance().get(Calendar.YEAR)+" р."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="43" width="555" height="13" uuid="68c2f639-cc63-4093-8694-25d31a9091b0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[План-схема об’єкта]]></text>
+			</staticText>
+			<image hAlign="Center" vAlign="Middle" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="26" y="57" width="518" height="230" uuid="8f7dca5d-58be-460c-b12e-9d4480a44885">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[new Boolean($F{scheme}!=null)]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$F{scheme}]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle" isUsingCache="true" onErrorType="Blank">
+				<reportElement x="26" y="288" width="518" height="230" uuid="26bc9685-ad61-48dc-8fc8-512b6f7d688c">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{map_}!=null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$F{map_}]]></imageExpression>
+			</image>
+			<image hAlign="Center" vAlign="Middle" isUsingCache="true">
+				<reportElement x="26" y="518" width="518" height="230" uuid="1e40fdeb-8b52-4148-89fd-f4946a3165ba">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[$F{map_details}!=null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[$F{map_details}]]></imageExpression>
+			</image>
+		</band>
+		<band height="748">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="41" uuid="9f1e6d28-5885-4045-b2ea-f6447687e19c"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[АКТ
+вводу в експлуатацію охоронної сигналізації
+та обстеження технічного стану об’єкта
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="70" width="555" height="14" uuid="854f5ce9-ba09-4bb6-b1b3-9d6d2ef86ad9"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Додаткові поради щодо обладнання технічними засобами охорони:
+]]></text>
+			</staticText>
+			<elementGroup>
+				<line>
+					<reportElement x="16" y="97" width="528" height="1" uuid="44f20068-fe95-4085-a87c-d985d3dc3cbb"/>
+				</line>
+				<line>
+					<reportElement x="16" y="112" width="528" height="1" uuid="928134d6-4ee9-4128-979d-973062c65288"/>
+				</line>
+				<line>
+					<reportElement x="16" y="125" width="528" height="1" uuid="43016994-fdfd-4899-9158-508499537bb9"/>
+				</line>
+				<line>
+					<reportElement x="16" y="140" width="528" height="1" uuid="3189cd70-d2f5-43c5-abc7-f9d4c30e430e"/>
+				</line>
+				<line>
+					<reportElement x="16" y="155" width="528" height="1" uuid="9125c00b-1f28-4c9f-b88f-9163d4a8564f"/>
+				</line>
+				<line>
+					<reportElement x="16" y="170" width="528" height="1" uuid="a3c7df27-33a3-450a-902d-40bb88736b7e"/>
+				</line>
+				<line>
+					<reportElement x="16" y="183" width="528" height="1" uuid="e19c5e80-38b9-4d5f-9c14-3ce475a1b5a0"/>
+				</line>
+				<line>
+					<reportElement x="16" y="198" width="528" height="1" uuid="5ceddd3f-24c3-448f-95e7-b4ece8f4a8c7"/>
+				</line>
+			</elementGroup>
+			<staticText>
+				<reportElement x="0" y="221" width="555" height="14" uuid="8d2e15f4-0ed8-44a2-8075-2429803cded0"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Додаткові поради щодо обладнання технічними засобами охорони:
+]]></text>
+			</staticText>
+			<line>
+				<reportElement x="16" y="315" width="528" height="1" uuid="4843e742-7b9b-463b-bbf6-1012f3959a08"/>
+			</line>
+			<line>
+				<reportElement x="16" y="331" width="528" height="1" uuid="e3019c02-80da-43f3-aca6-216634ee614d"/>
+			</line>
+			<line>
+				<reportElement x="16" y="348" width="528" height="1" uuid="ba699889-6d90-4da3-b1f2-357ea50ee64e"/>
+			</line>
+			<line>
+				<reportElement x="16" y="363" width="528" height="1" uuid="50353e60-48b7-481c-9e4c-f7e3952fc36d"/>
+			</line>
+			<line>
+				<reportElement x="16" y="264" width="528" height="1" uuid="e64b70d6-4625-42a2-9b07-f22bc84865f1"/>
+			</line>
+			<line>
+				<reportElement x="16" y="280" width="528" height="1" uuid="341463d6-2cdc-40d1-96af-a124c5298e2b"/>
+			</line>
+			<line>
+				<reportElement x="16" y="297" width="528" height="1" uuid="52b25d06-6fce-4f54-a944-af00ac2945a4"/>
+			</line>
+			<line>
+				<reportElement x="16" y="249" width="528" height="1" uuid="dcb4b6a4-0cbc-46a4-bdd3-2fd43ebd257a"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="391" width="555" height="28" uuid="bcf493fe-93f9-42ce-94d4-1ed441506d3a"/>
+				<textElement textAlignment="Justified"/>
+				<text><![CDATA[	Систему охоронної сигналізації, яка пройшла комплексні випробування, включаючи пусконалагоджувальні роботи, вважати прийнятою в експлуатацію з ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="326" y="430" width="227" height="20" uuid="c1ff8abe-46cb-49e5-85b7-16ef137186e0"/>
+				<textFieldExpression><![CDATA["від «"+Calendar.getInstance().get(Calendar.DAY_OF_MONTH)+"» "+$F{month_word_ukr}+ " " +Calendar.getInstance().get(Calendar.YEAR)+" р."]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="544" y="0" width="11" height="10" uuid="568d02a4-1462-4419-ba0c-5edc2a42ca17"/>
+				<textElement>
+					<font size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="10" width="275" height="12" uuid="a81c82c4-d053-4a45-9ae6-57f09a4a10cc"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[ВИКОНАВЕЦЬ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="275" y="10" width="269" height="12" uuid="d8065d58-21d8-47cb-88cf-8a602e22bd26"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[ЗАМОВНИК]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="22" width="275" height="12" uuid="59a33966-196e-4f21-a937-95cb648230d1"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Директор  _______________В.В. Сарнавська]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="73" y="34" width="127" height="12" uuid="dd42fa74-a3b4-47db-b7e6-5e5e94339afe"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[М.П.]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="275" y="22" width="269" height="12" uuid="d0585416-806f-46c7-8ed2-2aad937793cc"/>
+				<textElement textAlignment="Center" markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["______________/ " + $F{person_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="326" y="34" width="127" height="12" uuid="22879e3c-1c5e-4e4b-b41d-9d8c1a582b65"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[М.П.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

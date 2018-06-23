@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+    <definition name="anonymous.definition"
+                template="/WEB-INF/jsp/tiles/layouts/anonymous/layout.jsp">
+        <put-attribute name="header" value="/WEB-INF/jsp/tiles/layouts/anonymous/header.jsp"/>
+        <put-attribute name="body" value=""/>
+        <put-attribute name="footer" value="/WEB-INF/jsp/tiles/layouts/anonymous/footer.jsp"/>
+    </definition>
+
+    <definition name="base.definition" template="/WEB-INF/jsp/tiles/layouts/user/layout.jsp">
+        <put-attribute name="title" value=""/>
+        <put-attribute name="header" value="/WEB-INF/jsp/tiles/layouts/user/header.jsp"/>
+        <put-attribute name="menu" value="/WEB-INF/jsp/tiles/layouts/user/menu.jsp"/>
+        <put-attribute name="body" value=""/>
+        <put-attribute name="footer" value="/WEB-INF/jsp/tiles/layouts/user/footer.jsp"/>
+    </definition>
+
+    <definition name="simmple.html" template="/WEB-INF/jsp/tiles/layouts/user/simple.html.jsp">
+    </definition>
+
+    <definition name="login" extends="anonymous.definition">
+        <put-attribute name="title" value="Log in with your account"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/login.jsp"/>
+    </definition>
+
+    <definition name="ppkList" extends="base.definition">
+        <put-attribute name="title" value="Contact Manager"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/ppkList.jsp"/>
+    </definition>
+
+    <definition name="viewPPK" extends="base.definition">
+        <put-attribute name="title" value="Contact Manager"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/viewPPK.jsp"/>
+    </definition>
+
+    <definition name="mapTracking" extends="base.definition">
+        <put-attribute name="title" value="Hello Spring MVC"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/mapTracking.jsp"/>
+    </definition>
+
+    <definition name="report" extends="base.definition">
+        <put-attribute name="title" value="Сплати"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/accounting/report.jsp"/>
+    </definition>
+
+    <definition name="dictionaryEditor" extends="base.definition">
+        <put-attribute name="title" value="Редактор словнників"/>
+        <put-attribute name="body" value="/WEB-INF/jsp/dictionary/editor.jsp"/>
+    </definition>
+
+</tiles-definitions>

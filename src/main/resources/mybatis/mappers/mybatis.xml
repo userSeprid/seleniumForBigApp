@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.siriuscrm.account.db.mapper.PPKSaldoMapper">
+
+    <resultMap id="PPKSaldoDatesMap" type="PPKSaldoDates">
+        <result column="min_date" property="minDate"/>
+        <result column="max_date" property="maxDate"/>
+    </resultMap>
+
+    <resultMap id="ContractFeeModel" type="ContractFeeModel">
+        <result column="contract_id" property="contractId"/>
+        <result column="year" property="year"/>
+        <result column="month" property="monthNumber"/>
+        <result column="month_name" property="monthName"/>
+        <result column="amount" property="amount"/>
+    </resultMap>
+
+    <select id="findSaldoDates" resultMap="PPKSaldoDatesMap" parameterType="Long">
+        SELECT
+            min(cs.start_date)                                                                    AS min_date,
+            max(COALESCE(cs.end_date, end_of_month((CURRENT_DATE + INTERVAL '1 month') :: DATE))) AS max_date
+        FROM contract_state cs, contract c
+        WHERE cs.contract_id = C.id AND ppk_id = #{ppkId}
+    </select>
+
+    <select id="findSubscriptionFeeByContract" resultMap="ContractFeeModel" parameterType="Long">
+        SELECT
+            ppk_id,
+            contract_id,
+            year,
+            month,
+            month_name,
+            CASE WHEN month=3 THEN round(amount*0.9678) ELSE amount  END as amount
+        FROM acc_subscription_fee_by_month
+        WHERE contract_id = #{ppkId}
+        ORDER BY year, month
+    </select>
+    <select id="findAdditionalFeeByPPK" resultMap="ContractFeeModel" parameterType="Long">
+        SELECT *
+        FROM acc_additional_fee_by_month
+        WHERE ppk_id = #{ppkId}
+        ORDER BY year, month
+    </select>
+    <select id="findDebitByPPKId" parameterType="Long" resultType="Integer">
+        SELECT sum(fee) AS debit
+        FROM (SELECT sum(round(CASE WHEN month=3 THEN round(amount*0.9678) ELSE amount  END)) AS fee
+              FROM acc_subscription_fee_by_month
+              WHERE ppk_id = #{ppkId}
+              UNION ALL
+              SELECT sum(round(amount))
+              FROM acc_additional_fee_by_month
+              WHERE ppk_id = #{ppkId}) AS a
+    </select>
+    <select id="findCreditByPPKId" parameterType="Long" resultType="Integer">
+        SELECT coalesce(sum(amount),0) AS credit
+        FROM acc_payment_by_month
+        WHERE ppk_id = #{ppkId};
+    </select>
+
+    <select id="">
+
+    </select>
+
+</mapper>
